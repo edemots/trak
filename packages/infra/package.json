@@ -1,0 +1,22 @@
+{
+  "name": "@trak/infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "alchemy dev",
+    "login": "alchemy login",
+    "deploy": "alchemy deploy",
+    "deploy:staging": "alchemy deploy --stage staging",
+    "deploy:prod": "alchemy deploy --stage production",
+    "destroy": "alchemy destroy"
+  },
+  "dependencies": {
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@trak/config": "workspace:*",
+    "alchemy": "catalog:",
+    "typescript": "catalog:"
+  }
+}
