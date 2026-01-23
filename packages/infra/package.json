@@ -6,7 +6,6 @@
     "dev": "alchemy dev",
     "login": "alchemy login",
     "deploy": "alchemy deploy",
-    "deploy:staging": "alchemy deploy --stage staging",
     "deploy:prod": "alchemy deploy --stage production",
     "destroy": "alchemy destroy"
   },
@@ -15,7 +14,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/dotenv": "catalog:",
     "@trak/config": "workspace:*",
+    "@types/node": "catalog:",
     "alchemy": "catalog:",
     "typescript": "catalog:"
   }

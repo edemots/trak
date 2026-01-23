@@ -1,24 +1,26 @@
+import path from "node:path";
 import alchemy from "alchemy";
 import { D1Database, TanStackStart, Worker } from "alchemy/cloudflare";
+import { GitHubComment } from "alchemy/github";
+import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state";
 import { config } from "dotenv";
 
-const app = await alchemy("trak");
+const stage = process.env.STAGE || undefined;
 
-if (app.stage === "dev") {
-	config({ path: "./.env" });
-	config({ path: "../../apps/web/.env" });
-	config({ path: "../../apps/server/.env" });
-}
-if (app.stage === "staging") {
-	config({ path: "./.env.staging" });
-	config({ path: "../../apps/web/.env.staging" });
-	config({ path: "../../apps/server/.env.staging" });
-}
-if (app.stage === "production") {
-	config({ path: "./.env.production" });
-	config({ path: "../../apps/web/.env.production" });
-	config({ path: "../../apps/server/.env.production" });
-}
+const app = await alchemy("trak", {
+	stage,
+	stateStore:
+		stage && process.env.CI === "true"
+			? (scope) => new CloudflareStateStore(scope)
+			: (scope) =>
+					new FileSystemStateStore(scope, {
+						rootDir: path.resolve(import.meta.dirname, ".alchemy"),
+					}),
+});
+
+config({ path: "./.env" });
+config({ path: "../../apps/web/.env" });
+config({ path: "../../apps/server/.env" });
 
 const db = await D1Database("database", {
 	migrationsDir: "../../packages/db/src/migrations",
@@ -50,7 +52,26 @@ export const server = await Worker("server", {
 	},
 });
 
-console.log(`Web    -> ${web.url}`);
-console.log(`Server -> ${server.url}`);
+if (process.env.CI === "true" && process.env.PULL_REQUEST) {
+	await GitHubComment("preview-comment", {
+		owner: "edemots",
+		repository: "trak",
+		issueNumber: Number(process.env.PULL_REQUEST),
+		body: `## 🚀 Preview Deployed
+
+Your changes have been deployed to a preview environment:
+
+**🌐 Web:** ${web.url}
+**⚙️ Server:** ${server.url}
+
+Built from commit ${process.env.GITHUB_SHA?.slice(0, 7)}
+
+---
+<sub>🤖 This comment updates automatically with each push.</sub>`,
+	});
+} else {
+	console.log(`Web    -> ${web.url}`);
+	console.log(`Server -> ${server.url}`);
+}
 
 await app.finalize();
