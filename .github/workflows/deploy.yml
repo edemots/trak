@@ -85,7 +85,7 @@ jobs:
             exit 1
           fi
       - name: Destroy Preview Environment
-        run: bun alchemy destroy --stage ${{ env.STAGE }}
+        run: bun run -F @trak/infra destroy --stage ${{ env.STAGE }}
         env:
           ALCHEMY_PASSWORD: ${{ secrets.ALCHEMY_PASSWORD }}
           ALCHEMY_STATE_TOKEN: ${{ secrets.ALCHEMY_STATE_TOKEN }}

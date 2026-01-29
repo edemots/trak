@@ -33,7 +33,7 @@ export const auth = betterAuth({
 		// https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
 		crossSubDomainCookies: {
 			enabled: true,
-			domain: ".eliot-153.workers.dev",
+			domain: `.${env.CORS_ORIGIN}`,
 		},
 	},
 });
