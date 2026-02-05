@@ -2,13 +2,48 @@
   "formatter": "language_server",
   "format_on_save": "on",
   "lsp": {
-    "typescript-language-server": {
+    "tailwindcss-language-server": {
+      "settings": {
+        "classFunctions": [
+          "cva",
+          "cx"
+        ],
+        "experimental": {
+          "classRegex": [
+            "[cls|className]\\s\\:\\=\\s\"([^\"]*)"
+          ]
+        }
+      }
+    },
+    "vtsls": {
       "settings": {
         "typescript": {
-          "preferences": {
-            "includePackageJsonAutoImports": "on"
+          "tsserver": {
+            "maxTsServerMemory": 16184
+          },
+          "inlayHints": {
+            "parameterNames": {
+              "enabled": "all",
+              "suppressWhenArgumentMatchesName": false
+            },
+            "parameterTypes": {
+              "enabled": true
+            },
+            "variableTypes": {
+              "enabled": true,
+              "suppressWhenTypeMatchesName": true
+            },
+            "propertyDeclarationTypes": {
+              "enabled": true
+            },
+            "functionLikeReturnTypes": {
+              "enabled": true
+            },
+            "enumMemberValues": {
+              "enabled": true
+            }
           }
-        }
+        },
       }
     }
   },
