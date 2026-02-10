@@ -11,7 +11,6 @@ import type { AppRouter } from "@trak/api/routers/index";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
-import Header from "../components/header";
 import appCss from "../index.css?url";
 
 export interface RouterAppContext {
@@ -59,8 +58,7 @@ function RootDocument() {
 			</head>
 			<body className="font-sans antialiased">
 				<ThemeProvider>
-					<div className="grid h-svh grid-rows-[auto_1fr]">
-						<Header />
+					<div className="grid h-svh grid-rows-1">
 						<Outlet />
 					</div>
 					<Toaster richColors />

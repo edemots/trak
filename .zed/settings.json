@@ -19,7 +19,7 @@
       "settings": {
         "typescript": {
           "tsserver": {
-            "maxTsServerMemory": 16184
+            "maxTsServerMemory": 32368
           },
           "inlayHints": {
             "parameterNames": {
@@ -60,6 +60,11 @@
       }
     },
     "TypeScript": {
+      "language_servers": [
+        "vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
       "formatter": {
         "language_server": {
           "name": "biome"
@@ -71,6 +76,11 @@
       }
     },
     "TSX": {
+      "language_servers": [
+        "vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
       "formatter": {
         "language_server": {
           "name": "biome"
