@@ -9,7 +9,7 @@ export const auth = betterAuth({
 		provider: "sqlite",
 		schema,
 	}),
-	trustedOrigins: [env.CORS_ORIGIN],
+	trustedOrigins: env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
 	emailAndPassword: {
 		enabled: false,
 	},
@@ -34,10 +34,9 @@ export const auth = betterAuth({
 			secure: true,
 			httpOnly: true,
 		},
-		// https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
 		crossSubDomainCookies: {
 			enabled: env.ENV === "production",
-			domain: `.${env.CORS_ORIGIN}`,
+			domain: `.${env.CROSS_SUBDOMAIN_COOKIE_DOMAIN}`,
 		},
 	},
 });
