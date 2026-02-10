@@ -29,7 +29,9 @@ const db = await D1Database("database", {
 export const web = await TanStackStart("web", {
 	cwd: "../../apps/web",
 	bindings: {
+		VITE_BETTER_AUTH_URL: alchemy.env.VITE_BETTER_AUTH_URL!,
 		VITE_SERVER_URL: alchemy.env.VITE_SERVER_URL!,
+		VITE_WEB_URL: alchemy.env.VITE_WEB_URL!,
 		DB: db,
 		CORS_ORIGIN: alchemy.env.CORS_ORIGIN!,
 		BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET!,
@@ -43,9 +45,12 @@ export const server = await Worker("server", {
 	compatibility: "node",
 	bindings: {
 		DB: db,
+		ENV: process.env.CI === "true" ? "production" : "development",
 		CORS_ORIGIN: alchemy.env.CORS_ORIGIN!,
 		BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET!,
 		BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL!,
+		GOOGLE_CLIENT_ID: alchemy.secret.env.GOOGLE_CLIENT_ID!,
+		GOOGLE_CLIENT_SECRET: alchemy.secret.env.GOOGLE_CLIENT_SECRET!,
 	},
 	dev: {
 		port: 8000,

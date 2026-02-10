@@ -1,22 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { getUser } from "@/functions/get-user";
 import { useTRPC } from "@/utils/trpc";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/(app)/dashboard")({
 	component: RouteComponent,
-	beforeLoad: async () => {
-		const session = await getUser();
-		return { session };
-	},
-	loader: ({ context }) => {
-		if (!context.session) {
-			throw redirect({
-				to: "/login",
-			});
-		}
-	},
 });
 
 function RouteComponent() {

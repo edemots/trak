@@ -7,17 +7,22 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "sqlite",
-
 		schema,
 	}),
 	trustedOrigins: [env.CORS_ORIGIN],
 	emailAndPassword: {
-		enabled: true,
+		enabled: false,
 	},
-	// uncomment cookieCache setting when ready to deploy to Cloudflare using *.workers.dev domains
+	socialProviders: {
+		google: {
+			prompt: "select_account",
+			clientId: env.GOOGLE_CLIENT_ID,
+			clientSecret: env.GOOGLE_CLIENT_SECRET,
+		},
+	},
 	session: {
 		cookieCache: {
-			enabled: true,
+			enabled: env.ENV === "production",
 			maxAge: 60,
 		},
 	},
@@ -29,10 +34,9 @@ export const auth = betterAuth({
 			secure: true,
 			httpOnly: true,
 		},
-		// uncomment crossSubDomainCookies setting when ready to deploy and replace <your-workers-subdomain> with your actual workers subdomain
 		// https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
 		crossSubDomainCookies: {
-			enabled: true,
+			enabled: env.ENV === "production",
 			domain: `.${env.CORS_ORIGIN}`,
 		},
 	},
