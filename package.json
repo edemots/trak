@@ -48,6 +48,7 @@
     "@cloudflare/workers-types": "catalog:",
     "@trak/config": "workspace:*",
     "@types/node": "catalog:",
+    "shadcn": "^3.7.0",
     "turbo": "^2.6.3",
     "typescript": "catalog:",
     "ultracite": "7.0.12"
