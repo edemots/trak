@@ -4,92 +4,75 @@
   "lsp": {
     "tailwindcss-language-server": {
       "settings": {
-        "classFunctions": [
-          "cva",
-          "cx"
-        ],
+        "classFunctions": ["cva", "cx"],
         "experimental": {
-          "classRegex": [
-            "[cls|className]\\s\\:\\=\\s\"([^\"]*)"
-          ]
+          "classRegex": ["[cls|className]\\s\\:\\=\\s\"([^\"]*)"]
         }
       }
     },
-    "vtsls": {
-      "settings": {
-        "typescript": {
-          "tsserver": {
-            "maxTsServerMemory": 32368
-          },
-          "inlayHints": {
-            "parameterNames": {
-              "enabled": "all",
-              "suppressWhenArgumentMatchesName": false
-            },
-            "parameterTypes": {
-              "enabled": true
-            },
-            "variableTypes": {
-              "enabled": true,
-              "suppressWhenTypeMatchesName": true
-            },
-            "propertyDeclarationTypes": {
-              "enabled": true
-            },
-            "functionLikeReturnTypes": {
-              "enabled": true
-            },
-            "enumMemberValues": {
-              "enabled": true
-            }
-          }
-        },
+    "oxlint": {
+      "initialization_options": {
+        "settings": {
+          "configPath": null,
+          "run": "onType",
+          "disableNestedConfig": false,
+          "fixKind": "safe_fix",
+          "typeAware": true,
+          "unusedDisableDirectives": "deny"
+        }
+      }
+    },
+    "oxfmt": {
+      "initialization_options": {
+        "settings": {
+          "configPath": null,
+          "run": "onSave"
+        }
       }
     }
   },
   "languages": {
     "JavaScript": {
-      "formatter": {
-        "language_server": {
-          "name": "biome"
-        }
+      "format_on_save": "on",
+      "prettier": {
+        "allowed": false
       },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "language_server": {
+            "name": "oxfmt"
+          }
+        },
+        {
+          "code_action": "source.fixAll.oxc"
+        }
+      ]
     },
     "TypeScript": {
-      "language_servers": [
-        "vtsls",
-        "!typescript-language-server",
-        "..."
-      ],
-      "formatter": {
-        "language_server": {
-          "name": "biome"
-        }
+      "format_on_save": "on",
+      "prettier": {
+        "allowed": false
       },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "language_server": {
+            "name": "oxfmt"
+          }
+        }
+      ]
     },
     "TSX": {
-      "language_servers": [
-        "vtsls",
-        "!typescript-language-server",
-        "..."
-      ],
-      "formatter": {
-        "language_server": {
-          "name": "biome"
-        }
+      "format_on_save": "on",
+      "prettier": {
+        "allowed": false
       },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "language_server": {
+            "name": "oxfmt"
+          }
+        }
+      ]
     }
   }
 }

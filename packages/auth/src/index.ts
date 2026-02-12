@@ -1,18 +1,26 @@
 import { db } from "@trak/db";
 import * as schema from "@trak/db/schema/auth";
 import { env } from "@trak/env/server";
-import { betterAuth } from "better-auth";
+import { betterAuth, logger } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { oAuthProxy } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema,
   }),
-  plugins: [
-    oAuthProxy(),
-  ],
+  logger: {
+    disabled: false,
+    disableColors: false,
+    level: env.ENV === "production" ? "warn" : "debug",
+    log: (level, message, ...args) => {
+      // Custom logging implementation
+      console.log(`[${level}] ${message}`, ...args);
+    },
+  },
+  telemetry: {
+    enabled: false,
+  },
   trustedOrigins: env.CORS_ORIGIN.split(","),
   emailAndPassword: {
     enabled: false,
@@ -22,12 +30,11 @@ export const auth = betterAuth({
       prompt: "select_account",
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      redirectURI: "https://trak-api.devkid.fr/api/auth/callback/google"
     },
   },
   session: {
     cookieCache: {
-      enabled: env.ENV === "production",
+      enabled: env.ENV !== "development",
       maxAge: 60,
     },
   },
@@ -40,8 +47,18 @@ export const auth = betterAuth({
       httpOnly: true,
     },
     crossSubDomainCookies: {
-      enabled: env.ENV === "production",
+      enabled: env.ENV !== "development",
       domain: `.${env.CROSS_SUBDOMAIN_COOKIE_DOMAIN}`,
-    }
+    },
+  },
+  onAPIError: {
+    errorURL: "/error",
+    onError: (error) => {
+      if (error instanceof Error && error.message) {
+        logger.error(error.message, { error });
+      }
+      logger.error("An API error occurred", { error });
+    },
+    throw: false,
   },
 });

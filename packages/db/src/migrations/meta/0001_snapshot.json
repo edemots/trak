@@ -103,9 +103,7 @@
       "indexes": {
         "account_userId_idx": {
           "name": "account_userId_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -114,12 +112,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -192,16 +186,12 @@
       "indexes": {
         "session_token_unique": {
           "name": "session_token_unique",
-          "columns": [
-            "token"
-          ],
+          "columns": ["token"],
           "isUnique": true
         },
         "session_userId_idx": {
           "name": "session_userId_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -210,12 +200,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -283,9 +269,7 @@
       "indexes": {
         "user_email_unique": {
           "name": "user_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
@@ -345,9 +329,7 @@
       "indexes": {
         "verification_identifier_idx": {
           "name": "verification_identifier_idx",
-          "columns": [
-            "identifier"
-          ],
+          "columns": ["identifier"],
           "isUnique": false
         }
       },
@@ -407,9 +389,7 @@
       "indexes": {
         "bank_account_uid_unique": {
           "name": "bank_account_uid_unique",
-          "columns": [
-            "uid"
-          ],
+          "columns": ["uid"],
           "isUnique": true
         }
       },
@@ -442,12 +422,8 @@
           "name": "bank_account_user_bank_account_id_bank_account_id_fk",
           "tableFrom": "bank_account_user",
           "tableTo": "bank_account",
-          "columnsFrom": [
-            "bank_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bank_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -455,22 +431,15 @@
           "name": "bank_account_user_user_id_user_id_fk",
           "tableFrom": "bank_account_user",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {
         "bank_account_user_bank_account_id_user_id_pk": {
-          "columns": [
-            "bank_account_id",
-            "user_id"
-          ],
+          "columns": ["bank_account_id", "user_id"],
           "name": "bank_account_user_bank_account_id_user_id_pk"
         }
       },
@@ -543,9 +512,7 @@
       "indexes": {
         "category_uid_unique": {
           "name": "category_uid_unique",
-          "columns": [
-            "uid"
-          ],
+          "columns": ["uid"],
           "isUnique": true
         }
       },
@@ -554,12 +521,8 @@
           "name": "category_group_id_group_id_fk",
           "tableFrom": "category",
           "tableTo": "group",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "cascade"
         }
@@ -626,9 +589,7 @@
       "indexes": {
         "group_uid_unique": {
           "name": "group_uid_unique",
-          "columns": [
-            "uid"
-          ],
+          "columns": ["uid"],
           "isUnique": true
         }
       },
@@ -637,12 +598,8 @@
           "name": "group_user_id_user_id_fk",
           "tableFrom": "group",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -739,9 +696,7 @@
       "indexes": {
         "recurring_rule_uid_unique": {
           "name": "recurring_rule_uid_unique",
-          "columns": [
-            "uid"
-          ],
+          "columns": ["uid"],
           "isUnique": true
         }
       },
@@ -750,12 +705,8 @@
           "name": "recurring_rule_bank_account_id_bank_account_id_fk",
           "tableFrom": "recurring_rule",
           "tableTo": "bank_account",
-          "columnsFrom": [
-            "bank_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bank_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -763,12 +714,8 @@
           "name": "recurring_rule_category_id_category_id_fk",
           "tableFrom": "recurring_rule",
           "tableTo": "category",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "cascade"
         }
@@ -881,74 +828,42 @@
       "indexes": {
         "transaction_uid_unique": {
           "name": "transaction_uid_unique",
-          "columns": [
-            "uid"
-          ],
+          "columns": ["uid"],
           "isUnique": true
         },
         "td_pd_cat_acc_idx": {
           "name": "td_pd_cat_acc_idx",
-          "columns": [
-            "trade_date",
-            "posted_date",
-            "category_id",
-            "bank_account_id"
-          ],
+          "columns": ["trade_date", "posted_date", "category_id", "bank_account_id"],
           "isUnique": false
         },
         "td_pd_acc_cat_idx": {
           "name": "td_pd_acc_cat_idx",
-          "columns": [
-            "trade_date",
-            "posted_date",
-            "bank_account_id",
-            "category_id"
-          ],
+          "columns": ["trade_date", "posted_date", "bank_account_id", "category_id"],
           "isUnique": false
         },
         "td_cat_acc_idx": {
           "name": "td_cat_acc_idx",
-          "columns": [
-            "trade_date",
-            "category_id",
-            "bank_account_id"
-          ],
+          "columns": ["trade_date", "category_id", "bank_account_id"],
           "isUnique": false
         },
         "cat_td_acc_idx": {
           "name": "cat_td_acc_idx",
-          "columns": [
-            "category_id",
-            "trade_date",
-            "bank_account_id"
-          ],
+          "columns": ["category_id", "trade_date", "bank_account_id"],
           "isUnique": false
         },
         "acc_td_cat_idx": {
           "name": "acc_td_cat_idx",
-          "columns": [
-            "bank_account_id",
-            "trade_date",
-            "category_id"
-          ],
+          "columns": ["bank_account_id", "trade_date", "category_id"],
           "isUnique": false
         },
         "acc_cat_td_idx": {
           "name": "acc_cat_td_idx",
-          "columns": [
-            "bank_account_id",
-            "category_id",
-            "trade_date"
-          ],
+          "columns": ["bank_account_id", "category_id", "trade_date"],
           "isUnique": false
         },
         "cat_acc_td_idx": {
           "name": "cat_acc_td_idx",
-          "columns": [
-            "category_id",
-            "bank_account_id",
-            "trade_date"
-          ],
+          "columns": ["category_id", "bank_account_id", "trade_date"],
           "isUnique": false
         }
       },
@@ -957,12 +872,8 @@
           "name": "transaction_bank_account_id_bank_account_id_fk",
           "tableFrom": "transaction",
           "tableTo": "bank_account",
-          "columnsFrom": [
-            "bank_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["bank_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -970,12 +881,8 @@
           "name": "transaction_category_id_category_id_fk",
           "tableFrom": "transaction",
           "tableTo": "category",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "cascade"
         },
@@ -983,12 +890,8 @@
           "name": "transaction_recurring_rule_id_recurring_rule_id_fk",
           "tableFrom": "transaction",
           "tableTo": "recurring_rule",
-          "columnsFrom": [
-            "recurring_rule_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["recurring_rule_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "cascade"
         }

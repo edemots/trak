@@ -14,8 +14,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/dotenv": "catalog:",
     "@trak/config": "workspace:*",
+    "@types/dotenv": "catalog:",
     "@types/node": "catalog:",
     "alchemy": "catalog:",
     "typescript": "catalog:"

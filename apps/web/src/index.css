@@ -46,7 +46,7 @@
     --shadow-color: #000000;
 }
 
-[data-theme=dark] {
+[data-theme="dark"] {
     --background: #0a0a0a;
     --foreground: #fafafa;
     --card: #191919;
@@ -120,9 +120,9 @@
     --radius-2xl: calc(var(--radius) + 8px);
     --radius-3xl: calc(var(--radius) + 12px);
     --radius-4xl: calc(var(--radius) + 16px);
-    --font-sans: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
-    --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
-    --font-serif: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
+    --font-sans: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+    --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+    --font-serif: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 
     --shadow-2xs: var(--shadow-x) var(--shadow-y) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
     --shadow-xs: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
@@ -142,8 +142,8 @@
 
 @layer base {
     @font-face {
-        font-family: 'Geist Mono';
-        src: local("Geist Mono"), url('/fonts/GeistMono-VariableFont_wght.ttf');
+        font-family: "Geist Mono";
+        src: local("Geist Mono"), url("/fonts/GeistMono-VariableFont_wght.ttf");
         font-weight: 100 900;
     }
 
