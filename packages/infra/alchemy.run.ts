@@ -40,22 +40,21 @@ export const web = await TanStackStart("web", {
 });
 
 export const server = await Worker("server", {
-	cwd: "../../apps/server",
-	entrypoint: "src/index.ts",
-	compatibility: "node",
-	bindings: {
-		DB: db,
-		ENV: process.env.CI === "true" ? "production" : "development",
-		CORS_ORIGIN: alchemy.env.CORS_ORIGIN!,
-		CROSS_SUBDOMAIN_COOKIE_DOMAIN: alchemy.env.CROSS_SUBDOMAIN_COOKIE_DOMAIN!,
-		BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET!,
-		BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL!,
-		GOOGLE_CLIENT_ID: alchemy.secret.env.GOOGLE_CLIENT_ID!,
-		GOOGLE_CLIENT_SECRET: alchemy.secret.env.GOOGLE_CLIENT_SECRET!,
-	},
-	dev: {
-		port: 8000,
-	},
+  cwd: "../../apps/server",
+  entrypoint: "src/index.ts",
+  compatibility: "node",
+  bindings: {
+    DB: db,
+    ENV: process.env.CI === "true" ? "production" : "development",
+    CORS_ORIGIN: alchemy.env.CORS_ORIGIN!,
+    BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET!,
+    BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL!,
+    GOOGLE_CLIENT_ID: alchemy.secret.env.GOOGLE_CLIENT_ID!,
+    GOOGLE_CLIENT_SECRET: alchemy.secret.env.GOOGLE_CLIENT_SECRET!,
+  },
+  dev: {
+    port: 8000,
+  },
 });
 
 if (process.env.CI === "true" && process.env.PULL_REQUEST) {
