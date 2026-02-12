@@ -10,7 +10,7 @@
   "backend": "hono",
   "runtime": "workers",
   "frontend": ["tanstack-start"],
-  "addons": ["biome", "turborepo", "ultracite"],
+  "addons": ["oxlint", "turborepo", "ultracite"],
   "examples": [],
   "auth": "better-auth",
   "payments": "none",

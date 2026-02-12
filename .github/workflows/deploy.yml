@@ -3,12 +3,12 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - closed
+  # pull_request:
+  #   types:
+  #     - opened
+  #     - reopened
+  #     - synchronize
+  #     - closed
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -29,24 +29,28 @@ jobs:
           bun-version: "1.3.6"
       - name: Install dependencies
         run: bun install
-      - name: Create staging ./apps/server/.env
-        if: github.event_name == 'pull_request'
-        run: |
-          touch ./apps/server/.env
-          BETTER_AUTH_SECRET=$(openssl rand -base64 32)
-          echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> ./apps/server/.env
-          echo "BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/server/.env
-          echo "CORS_ORIGIN=https://trak-web-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/server/.env
-          echo "CROSS_SUBDOMAIN_COOKIE_DOMAIN=" >> ./apps/server/.env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./apps/server/.env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./apps/server/.env
-      - name: Create staging ./apps/web/.env
-        if: github.event_name == 'pull_request'
-        run: |
-          touch ./apps/web/.env
-          echo "VITE_BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/web/.env
-          echo "VITE_SERVER_URL=https://trak-server-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/web/.env
-          echo "VITE_WEB_URL=https://trak-web-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/web/.env
+
+      # Staging
+      # - name: Create staging ./apps/server/.env
+      #   if: github.event_name == 'pull_request'
+      #   run: |
+      #     touch ./apps/server/.env
+      #     echo "BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}" >> ./apps/server/.env
+      #     echo "BETTER_AUTH_URL=https://trak-server-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/server/.env
+      #     echo "BETTER_AUTH_PROD_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/server/.env
+      #     echo "CORS_ORIGIN=${{ vars.CORS_ORIGIN }}" >> ./apps/server/.env
+      #     echo "CROSS_SUBDOMAIN_COOKIE_DOMAIN=trak-web-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/server/.env
+      #     echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./apps/server/.env
+      #     echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./apps/server/.env
+      # - name: Create staging ./apps/web/.env
+      #   if: github.event_name == 'pull_request'
+      #   run: |
+      #     touch ./apps/web/.env
+      #     echo "VITE_BETTER_AUTH_URL=https://trak-server-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/web/.env
+      #     echo "VITE_SERVER_URL=https://trak-server-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/web/.env
+      #     echo "VITE_WEB_URL=https://trak-web-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/web/.env
+
+      # Production
       - name: Create prod ./apps/server/.env
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
@@ -64,7 +68,9 @@ jobs:
           echo "VITE_BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/web/.env
           echo "VITE_SERVER_URL=${{ vars.VITE_SERVER_URL }}" >> ./apps/web/.env
           echo "VITE_WEB_URL=${{ vars.VITE_WEB_URL }}" >> ./apps/web/.env
+
       - name: Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: bun run -F @trak/infra deploy --stage ${{ env.STAGE }}
         env:
           ALCHEMY_PASSWORD: ${{ secrets.ALCHEMY_PASSWORD }}

@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 
@@ -15,49 +15,49 @@ import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 
 export default function UserMenu() {
-	const navigate = useNavigate();
-	const { data: session, isPending } = authClient.useSession();
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
 
-	if (isPending) {
-		return <Skeleton className="h-8 w-22" />;
-	}
+  if (isPending) {
+    return <Skeleton className="h-8 w-22" />;
+  }
 
-	if (!session) {
-		return (
-			<Link to="/sign-in">
-				<Button variant="outline">Connexion</Button>
-			</Link>
-		);
-	}
+  if (!session) {
+    return (
+      <Link to="/sign-in">
+        <Button variant="outline">Connexion</Button>
+      </Link>
+    );
+  }
 
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger render={<Button variant="outline" />}>
-				{session.user.name}
-			</DropdownMenuTrigger>
-			<DropdownMenuContent className="bg-card">
-				<DropdownMenuGroup>
-					<DropdownMenuLabel>My Account</DropdownMenuLabel>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem>{session.user.email}</DropdownMenuItem>
-					<DropdownMenuItem
-						onClick={() => {
-							authClient.signOut({
-								fetchOptions: {
-									onSuccess: () => {
-										navigate({
-											to: "/",
-										});
-									},
-								},
-							});
-						}}
-						variant="destructive"
-					>
-						Sign Out
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" />}>
+        {session.user.name}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="bg-card">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    navigate({
+                      to: "/",
+                    });
+                  },
+                },
+              });
+            }}
+            variant="destructive"
+          >
+            Sign Out
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

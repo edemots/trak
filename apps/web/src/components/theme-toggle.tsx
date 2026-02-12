@@ -1,32 +1,48 @@
 "use client";
 
-import { Moon, Sun, SunMoon } from "lucide-react";
+import { MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import { authClient } from "@/lib/auth-client";
+
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 
+const THEME_KEYBOARD_SHORTCUT = "t";
+
 export function ThemeToggle() {
-	const { theme, setTheme, themes } = useTheme();
-	const { isPending } = authClient.useSession();
-	const [themeQueue, setThemeQueue] = useState(() => themes);
+  const { theme, setTheme, themes } = useTheme();
+  const { isPending } = authClient.useSession();
+  const [themeQueue, setThemeQueue] = useState(() => themes);
 
-	if (isPending) {
-		return <Skeleton className="h-8 w-9" />;
-	}
+  const cycleTheme = useCallback(() => {
+    const nextTheme = themeQueue[0];
+    setTheme(nextTheme);
+    setThemeQueue((prevQueue) => [...prevQueue.slice(1), nextTheme]);
+  }, [themeQueue, setThemeQueue, setTheme]);
 
-	function cycleTheme() {
-		const nextTheme = themeQueue[0];
-		setTheme(nextTheme);
-		setThemeQueue((prevQueue) => [...prevQueue.slice(1), nextTheme]);
-	}
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === THEME_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        cycleTheme();
+      }
+    };
 
-	return (
-		<Button aria-label="Set theme" onClick={cycleTheme} variant="outline">
-			{theme === "light" && <Sun />}
-			{theme === "dark" && <Moon />}
-			{theme === "system" && <SunMoon />}
-		</Button>
-	);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [cycleTheme]);
+
+  if (isPending) {
+    return <Skeleton className="size-8" />;
+  }
+
+  return (
+    <Button aria-label="Set theme" onClick={cycleTheme} variant="outline" size="icon">
+      {theme === "light" && <SunIcon />}
+      {theme === "dark" && <MoonIcon />}
+      {theme === "system" && <SunMoonIcon />}
+    </Button>
+  );
 }

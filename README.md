@@ -14,7 +14,7 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Drizzle** - TypeScript-first ORM
 - **SQLite/Turso** - Database engine
 - **Authentication** - Better-Auth
-- **Biome** - Linting and formatting
+- **Oxlint** - Linting and formatting
 - **Turborepo** - Optimized monorepo build system
 
 ## Getting Started
@@ -83,4 +83,4 @@ trak/
 - `bun run check-types`: Check TypeScript types across all apps
 - `bun run db:push`: Push schema changes to database
 - `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Biome formatting and linting
+- `bun run check`: Run Oxlint formatting and linting
