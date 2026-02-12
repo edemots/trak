@@ -37,6 +37,7 @@ jobs:
           echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> ./apps/server/.env
           echo "BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/server/.env
           echo "CORS_ORIGIN=https://trak-web-${{ format('pr-{0}', github.event.number) }}.eliot-153.workers.dev" >> ./apps/server/.env
+          echo "CROSS_SUBDOMAIN_COOKIE_DOMAIN=" >> ./apps/server/.env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./apps/server/.env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./apps/server/.env
       - name: Create staging ./apps/web/.env
@@ -53,6 +54,7 @@ jobs:
           echo "BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}" >> ./apps/server/.env
           echo "BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}" >> ./apps/server/.env
           echo "CORS_ORIGIN=${{ vars.CORS_ORIGIN }}" >> ./apps/server/.env
+          echo "CROSS_SUBDOMAIN_COOKIE_DOMAIN=${{ vars.CROSS_SUBDOMAIN_COOKIE_DOMAIN }}" >> ./apps/server/.env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./apps/server/.env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./apps/server/.env
       - name: Create prod ./apps/web/.env
