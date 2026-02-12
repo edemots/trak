@@ -9,31 +9,63 @@ import { logger } from "hono/logger";
 
 const app = new Hono();
 
+const corsAllowList = env.CORS_ORIGIN.split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
+
+const escapeRegExp = (value: string): string => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+const getAllowedOrigin = (origin: string | undefined): string | undefined => {
+  if (!origin || corsAllowList.length === 0) {
+    return corsAllowList[0];
+  }
+
+  const isAllowed = corsAllowList.some((pattern) => {
+    if (pattern === "*") {
+      return true;
+    }
+
+    if (!pattern.includes("*")) {
+      return origin === pattern;
+    }
+
+    const regexSource = `^${pattern.split("*").map(escapeRegExp).join(".*")}$`;
+    return new RegExp(regexSource).test(origin);
+  });
+
+  return isAllowed ? origin : corsAllowList[0];
+};
+
 app.use(logger());
 app.use(
-	"/*",
-	cors({
-		origin: env.CORS_ORIGIN.split(','),
-		allowMethods: ["GET", "POST", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"],
-		credentials: true,
-	})
+  "/*",
+  cors({
+    origin: (origin) => {
+      return getAllowedOrigin(origin);
+    },
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    credentials: true,
+  }),
 );
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.use(
-	"/trpc/*",
-	trpcServer({
-		router: appRouter,
-		createContext: (_opts, context) => {
-			return createContext({ context });
-		},
-	})
+  "/trpc/*",
+  trpcServer({
+    router: appRouter,
+    createContext: (_opts, context) => {
+      return createContext({ context });
+    },
+  }),
 );
 
 app.get("/", (c) => {
-	return c.text("OK");
+  return c.text("OK");
 });
 
 export default app;
