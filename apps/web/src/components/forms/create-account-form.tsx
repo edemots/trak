@@ -90,6 +90,7 @@ export function CreateBankAccountFormFields({ form }: { form: CreateBankAccountF
                 onChange={(e) => field.handleChange(e.target.value)}
                 type="text"
                 value={field.state.value}
+                placeholder="ex: Compte commun"
               />
               {field.state.meta.errors.map((error) => (
                 <p className="text-red-500" key={error?.message}>

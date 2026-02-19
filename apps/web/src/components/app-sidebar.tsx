@@ -1,6 +1,4 @@
-"use client";
-
-import type { BankAccount } from "@trak/db/schema/bank-account";
+import type { BankAccount } from "@trak/api/routers/bank-account";
 import type { User } from "better-auth";
 import type * as React from "react";
 

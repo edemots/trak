@@ -31,7 +31,7 @@ function RouteComponent() {
   const signIn = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${env.VITE_WEB_URL}/${search.redirect || "dashboard"}`,
+      callbackURL: `${env.VITE_WEB_URL}${search.redirect || "dashboard"}`,
     });
   };
 
@@ -44,8 +44,9 @@ function RouteComponent() {
         <PixelBlast
           color="#a1a1a1"
           edgeFade={0.25}
-          enableRipples={false}
-          patternDensity={1.25}
+          enableRipples={true}
+          rippleSpeed={3}
+          patternDensity={0.5}
           patternScale={5}
           pixelSize={3}
           pixelSizeJitter={1}
@@ -57,8 +58,9 @@ function RouteComponent() {
         <PixelBlast
           color="#f5f5f5"
           edgeFade={0.25}
-          enableRipples={false}
-          patternDensity={1.25}
+          enableRipples={true}
+          rippleSpeed={3}
+          patternDensity={0.5}
           patternScale={5}
           pixelSize={3}
           pixelSizeJitter={1}

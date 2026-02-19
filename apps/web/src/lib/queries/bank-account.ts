@@ -47,8 +47,8 @@ export function useCreateBankAccountMutation() {
       onError: (_error, _newBankAccount, context) => {
         queryClient.setQueryData(trpc.bankAccount.all.queryKey(), context?.previousBankAccounts);
       },
-      onSettled: () => {
-        queryClient.invalidateQueries({
+      onSettled: async () => {
+        await queryClient.invalidateQueries({
           queryKey: trpc.bankAccount.all.queryKey(),
         });
       },
@@ -60,8 +60,8 @@ export function useUpdateBankAccountMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.bankAccount.update.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
           queryKey: trpc.bankAccount.all.queryKey(),
         });
         // utils.stats.accountBalances.invalidate();
@@ -74,8 +74,8 @@ export function useDeleteBankAccountMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.bankAccount.delete.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
           queryKey: trpc.bankAccount.all.queryKey(),
         });
         // utils.stats.invalidate();

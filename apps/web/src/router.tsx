@@ -8,6 +8,7 @@ import { env } from "@trak/env/web";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { toast } from "sonner";
+import superjson from "superjson";
 
 import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
@@ -31,6 +32,19 @@ const trpcClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${env.VITE_SERVER_URL}/trpc`,
+      transformer: superjson,
+      async headers() {
+        // Forward cookies from the incoming request during SSR
+        if (import.meta.env.SSR) {
+          const { getRequestHeaders } = await import("@tanstack/react-start/server");
+          const requestHeaders = getRequestHeaders();
+          const cookie = requestHeaders.get("cookie");
+          if (cookie) {
+            return { cookie };
+          }
+        }
+        return {};
+      },
       fetch(url, options) {
         return fetch(url, {
           ...options,

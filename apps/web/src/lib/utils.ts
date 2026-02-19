@@ -2,8 +2,18 @@ import { clsx, type ClassValue } from "clsx";
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
+const EMPTY_SUBSCRIBE = () => () => {};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function useHydrated() {
+  return React.useSyncExternalStore(
+    EMPTY_SUBSCRIBE,
+    () => true,
+    () => false,
+  );
 }
 
 export function useIsMobile(mobileBreakpoint = 768) {

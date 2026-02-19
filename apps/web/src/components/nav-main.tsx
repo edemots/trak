@@ -1,15 +1,11 @@
-"use client";
-
-import type { BankAccount } from "@trak/db/schema/bank-account";
+import type { BankAccount } from "@trak/api/routers/bank-account";
 import type { LucideIcon } from "lucide-react";
 
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
-import { DynamicIcon, type IconName } from "lucide-react/dynamic";
-import React from "react";
+import React, { useContext } from "react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-// import { useActiveBankAccount } from "@/store/bank-account";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -20,6 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { ActiveAccountContext } from "@/contexts/active-account";
 
 import { BankAccountSwitcher } from "./bank-account-switcher";
 
@@ -39,8 +36,10 @@ export function NavMain({
   bankAccounts?: Pick<BankAccount, "uid" | "name" | "icon">[];
 }) {
   const matchRoute = useMatchRoute();
-  const activeAccount = undefined;
-  // const activeAccount = useActiveBankAccount();
+  const { activeBankAccount } = useContext(ActiveAccountContext);
+  const linkSearch = {
+    accountId: activeBankAccount,
+  };
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -75,12 +74,7 @@ export function NavMain({
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               render={
-                                <Link
-                                  search={{
-                                    accountId: activeAccount?.uid,
-                                  }}
-                                  to={subItem.url}
-                                >
+                                <Link search={linkSearch} to={subItem.url}>
                                   <span>{subItem.title}</span>
                                 </Link>
                               }
@@ -97,7 +91,7 @@ export function NavMain({
                 <SidebarMenuButton
                   isActive={matchRoute({ to: item.url, fuzzy: true }) !== false}
                   render={
-                    <Link search={{ accountId: activeAccount?.uid }} to={item.url}>
+                    <Link search={linkSearch} to={item.url}>
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>

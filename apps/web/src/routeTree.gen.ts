@@ -9,15 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
-import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
+import { Route as apponboardingRouteRouteImport } from './routes/(app)/(onboarding)/route'
+import { Route as appdashboardRouteRouteImport } from './routes/(app)/(dashboard)/route'
+import { Route as apponboardingOnboardingRouteImport } from './routes/(app)/(onboarding)/onboarding'
+import { Route as appdashboardDashboardRouteImport } from './routes/(app)/(dashboard)/dashboard'
 
-const appRouteRoute = appRouteRouteImport.update({
-  id: '/(app)',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,52 +26,70 @@ const authSignInRoute = authSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appDashboardRoute = appDashboardRouteImport.update({
+const apponboardingRouteRoute = apponboardingRouteRouteImport.update({
+  id: '/(app)/(onboarding)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appdashboardRouteRoute = appdashboardRouteRouteImport.update({
+  id: '/(app)/(dashboard)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const apponboardingOnboardingRoute = apponboardingOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => apponboardingRouteRoute,
+} as any)
+const appdashboardDashboardRoute = appdashboardDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => appRouteRoute,
+  getParentRoute: () => appdashboardRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof appDashboardRoute
   '/sign-in': typeof authSignInRoute
+  '/dashboard': typeof appdashboardDashboardRoute
+  '/onboarding': typeof apponboardingOnboardingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof appDashboardRoute
   '/sign-in': typeof authSignInRoute
+  '/dashboard': typeof appdashboardDashboardRoute
+  '/onboarding': typeof apponboardingOnboardingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/(app)': typeof appRouteRouteWithChildren
-  '/(app)/dashboard': typeof appDashboardRoute
+  '/(app)/(dashboard)': typeof appdashboardRouteRouteWithChildren
+  '/(app)/(onboarding)': typeof apponboardingRouteRouteWithChildren
   '/(auth)/sign-in': typeof authSignInRoute
+  '/(app)/(dashboard)/dashboard': typeof appdashboardDashboardRoute
+  '/(app)/(onboarding)/onboarding': typeof apponboardingOnboardingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/sign-in'
+  fullPaths: '/' | '/sign-in' | '/dashboard' | '/onboarding'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/sign-in'
-  id: '__root__' | '/' | '/(app)' | '/(app)/dashboard' | '/(auth)/sign-in'
+  to: '/' | '/sign-in' | '/dashboard' | '/onboarding'
+  id:
+    | '__root__'
+    | '/'
+    | '/(app)/(dashboard)'
+    | '/(app)/(onboarding)'
+    | '/(auth)/sign-in'
+    | '/(app)/(dashboard)/dashboard'
+    | '/(app)/(onboarding)/onboarding'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  appRouteRoute: typeof appRouteRouteWithChildren
+  appdashboardRouteRoute: typeof appdashboardRouteRouteWithChildren
+  apponboardingRouteRoute: typeof apponboardingRouteRouteWithChildren
   authSignInRoute: typeof authSignInRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(app)': {
-      id: '/(app)'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof appRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -88,31 +104,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
+    '/(app)/(onboarding)': {
+      id: '/(app)/(onboarding)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof apponboardingRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(dashboard)': {
+      id: '/(app)/(dashboard)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof appdashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(onboarding)/onboarding': {
+      id: '/(app)/(onboarding)/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof apponboardingOnboardingRouteImport
+      parentRoute: typeof apponboardingRouteRoute
+    }
+    '/(app)/(dashboard)/dashboard': {
+      id: '/(app)/(dashboard)/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardRouteImport
-      parentRoute: typeof appRouteRoute
+      preLoaderRoute: typeof appdashboardDashboardRouteImport
+      parentRoute: typeof appdashboardRouteRoute
     }
   }
 }
 
-interface appRouteRouteChildren {
-  appDashboardRoute: typeof appDashboardRoute
+interface appdashboardRouteRouteChildren {
+  appdashboardDashboardRoute: typeof appdashboardDashboardRoute
 }
 
-const appRouteRouteChildren: appRouteRouteChildren = {
-  appDashboardRoute: appDashboardRoute,
+const appdashboardRouteRouteChildren: appdashboardRouteRouteChildren = {
+  appdashboardDashboardRoute: appdashboardDashboardRoute,
 }
 
-const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
-  appRouteRouteChildren,
-)
+const appdashboardRouteRouteWithChildren =
+  appdashboardRouteRoute._addFileChildren(appdashboardRouteRouteChildren)
+
+interface apponboardingRouteRouteChildren {
+  apponboardingOnboardingRoute: typeof apponboardingOnboardingRoute
+}
+
+const apponboardingRouteRouteChildren: apponboardingRouteRouteChildren = {
+  apponboardingOnboardingRoute: apponboardingOnboardingRoute,
+}
+
+const apponboardingRouteRouteWithChildren =
+  apponboardingRouteRoute._addFileChildren(apponboardingRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  appRouteRoute: appRouteRouteWithChildren,
+  appdashboardRouteRoute: appdashboardRouteRouteWithChildren,
+  apponboardingRouteRoute: apponboardingRouteRouteWithChildren,
   authSignInRoute: authSignInRoute,
 }
 export const routeTree = rootRouteImport

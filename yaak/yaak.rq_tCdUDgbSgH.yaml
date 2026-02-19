@@ -1,0 +1,35 @@
+type: http_request
+model: http_request
+id: rq_tCdUDgbSgH
+createdAt: 2026-02-05T15:30:52.380858
+updatedAt: 2026-02-12T15:18:22.371302
+workspaceId: wk_AooP2ETmX5
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "provider": "google",
+      "callbackURL": "/dashboard"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: rQpmPVWqZ6
+- enabled: true
+  name: Origin
+  value: https://trak-web-pr-4.eliot-153.workers.dev
+  id: ryNkjncdve
+- enabled: true
+  name: ''
+  value: ''
+  id: jVWNgqaSDH
+method: POST
+name: ''
+sortPriority: -1770305452380.0
+url: https://trak-server-pr-4.eliot-153.workers.dev/api/auth/sign-in/social
+urlParameters: []

@@ -1,13 +1,13 @@
 "use client";
 
-import type { BankAccount } from "@trak/db/schema/bank-account";
+import type { BankAccount } from "@trak/api/routers/bank-account";
 
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { PiggyBankIcon } from "lucide-react";
 import { LoaderCircleIcon } from "lucide-react";
-import { DynamicIcon } from "lucide-react/dynamic";
-import { useState } from "react";
+import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
   CreateBankAccountFormFields,
@@ -39,7 +39,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-// import { useActiveBankAccount, useSetActiveBankAccount } from "@/store/bank-account";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ActiveAccountContext } from "@/contexts/active-account";
+import { useHydrated } from "@/lib/utils";
+
+const ALL_BANK_ACCOUNTS_SHORTCUT = "&";
+const BANK_ACCOUNT_SHORTCUTS = ["é", '"', "'"];
 
 function CreateBankAccountDialogContent({ onSuccess }: { onSuccess?: () => void }) {
   const { form, isPending } = useCreateBankAccountForm({
@@ -52,10 +57,10 @@ function CreateBankAccountDialogContent({ onSuccess }: { onSuccess?: () => void 
     <DialogContent
       render={
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            form.handleSubmit();
+            await form.handleSubmit();
           }}
         >
           <DialogHeader>
@@ -87,11 +92,72 @@ export function BankAccountSwitcher({
   const navigate = useNavigate({
     from: matches.at(-1)?.fullPath || "/",
   });
-  const activeBankAccount = undefined;
-  const setActiveBankAccount = () => {};
-  // const activeBankAccount = useActiveBankAccount();
-  // const setActiveBankAccount = useSetActiveBankAccount();
+  const { activeBankAccount: activeBankAccountId } = useContext(ActiveAccountContext);
+
+  const activeBankAccount = activeBankAccountId
+    ? bankAccounts.find((bA) => bA.uid === activeBankAccountId)
+    : undefined;
+
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isHydrated = useHydrated();
+
+  const selectBankAccount = useCallback(
+    async (account: (typeof bankAccounts)[number] | undefined) => {
+      await navigate({
+        search: (prev) => ({
+          ...prev,
+          accountId: account?.uid,
+        }),
+      });
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const handleKeyDown = async (event: KeyboardEvent) => {
+      if (
+        event.key === ALL_BANK_ACCOUNTS_SHORTCUT &&
+        (event.metaKey || event.ctrlKey) &&
+        activeBankAccount !== undefined
+      ) {
+        event.preventDefault();
+        await selectBankAccount(undefined);
+      }
+      const nextBankAccount = bankAccounts[BANK_ACCOUNT_SHORTCUTS.indexOf(event.key)];
+      if (
+        BANK_ACCOUNT_SHORTCUTS.includes(event.key) &&
+        (event.metaKey || event.ctrlKey) &&
+        nextBankAccount &&
+        (!activeBankAccount || activeBankAccountId !== nextBankAccount.uid)
+      ) {
+        event.preventDefault();
+        await selectBankAccount(nextBankAccount);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeBankAccount, activeBankAccountId, bankAccounts, isHydrated, selectBankAccount]);
+
+  if (!isHydrated) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg">
+            <Skeleton className="size-8 rounded-lg" />
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <ChevronsUpDownIcon className="ml-auto opacity-30" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
@@ -106,9 +172,11 @@ export function BankAccountSwitcher({
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     size="lg"
                   >
-                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                      <DynamicIcon name={activeBankAccount.icon} />
-                    </div>
+                    {activeBankAccount.icon && (
+                      <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                        <DynamicIcon name={activeBankAccount.icon as IconName} />
+                      </div>
+                    )}
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-medium">{activeBankAccount.name}</span>
                     </div>
@@ -142,10 +210,7 @@ export function BankAccountSwitcher({
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   className="gap-2 p-2"
-                  onClick={async () => {
-                    setActiveBankAccount(undefined);
-                    await navigate({ search: { accountId: undefined } });
-                  }}
+                  onClick={async () => await selectBankAccount(undefined)}
                 >
                   <div className="flex size-6 items-center justify-center rounded-md border">
                     <PiggyBankIcon />
@@ -156,15 +221,14 @@ export function BankAccountSwitcher({
                 {bankAccounts.map((account, index) => (
                   <DropdownMenuItem
                     className="gap-2 p-2"
-                    key={account.id}
-                    onClick={async () => {
-                      setActiveBankAccount(account);
-                      await navigate({ search: { accountId: account.uid } });
-                    }}
+                    key={account.uid}
+                    onClick={async () => await selectBankAccount(account)}
                   >
-                    <div className="flex size-6 items-center justify-center rounded-md border">
-                      <DynamicIcon name={account.icon} />
-                    </div>
+                    {account.icon && (
+                      <div className="flex size-6 items-center justify-center rounded-md border">
+                        <DynamicIcon name={account.icon as IconName} />
+                      </div>
+                    )}
                     {account.name}
                     <DropdownMenuShortcut>⌘{index + 2}</DropdownMenuShortcut>
                   </DropdownMenuItem>

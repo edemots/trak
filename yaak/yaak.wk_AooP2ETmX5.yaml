@@ -1,0 +1,14 @@
+type: workspace
+model: workspace
+id: wk_AooP2ETmX5
+createdAt: 2026-02-05T15:30:39.247295
+updatedAt: 2026-02-05T15:30:39.247295
+authentication: {}
+authenticationType: null
+description: ""
+headers: []
+name: trak
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0
