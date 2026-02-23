@@ -2,7 +2,7 @@ import type { BankAccount } from "@trak/api/routers/bank-account";
 import type { User } from "better-auth";
 import type * as React from "react";
 
-import { ArrowUpDownIcon, ChartPieIcon, Layers2Icon } from "lucide-react";
+import { ArrowUpDownIcon, ChartPieIcon, LayersIcon } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -34,7 +34,7 @@ const data = {
     {
       title: "Catégories",
       url: "/categories",
-      icon: Layers2Icon,
+      icon: LayersIcon,
     },
   ],
 };
@@ -48,7 +48,7 @@ export function AppSidebar({
   bankAccounts?: Pick<BankAccount, "uid" | "name" | "icon">[];
 } & React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="none" {...props}>
       <SidebarHeader className="flex-row items-center gap-2">
         <Logo size={48} />
         <p className="text-2xl font-bold">trak</p>

@@ -15,6 +15,13 @@
       "when": 1769163905757,
       "tag": "0001_dapper_scarlet_witch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1771859335551,
+      "tag": "0002_messy_fenris",
+      "breakpoints": true
     }
   ]
 }

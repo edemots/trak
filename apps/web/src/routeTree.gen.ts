@@ -15,6 +15,8 @@ import { Route as apponboardingRouteRouteImport } from './routes/(app)/(onboardi
 import { Route as appdashboardRouteRouteImport } from './routes/(app)/(dashboard)/route'
 import { Route as apponboardingOnboardingRouteImport } from './routes/(app)/(onboarding)/onboarding'
 import { Route as appdashboardDashboardRouteImport } from './routes/(app)/(dashboard)/dashboard'
+import { Route as appdashboardCategoriesIndexRouteImport } from './routes/(app)/(dashboard)/categories/index'
+import { Route as appdashboardCategoriesGroupIdRouteImport } from './routes/(app)/(dashboard)/categories/$groupId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -44,18 +46,34 @@ const appdashboardDashboardRoute = appdashboardDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => appdashboardRouteRoute,
 } as any)
+const appdashboardCategoriesIndexRoute =
+  appdashboardCategoriesIndexRouteImport.update({
+    id: '/categories/',
+    path: '/categories/',
+    getParentRoute: () => appdashboardRouteRoute,
+  } as any)
+const appdashboardCategoriesGroupIdRoute =
+  appdashboardCategoriesGroupIdRouteImport.update({
+    id: '/categories/$groupId',
+    path: '/categories/$groupId',
+    getParentRoute: () => appdashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appdashboardDashboardRoute
   '/onboarding': typeof apponboardingOnboardingRoute
+  '/categories/$groupId': typeof appdashboardCategoriesGroupIdRoute
+  '/categories/': typeof appdashboardCategoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appdashboardDashboardRoute
   '/onboarding': typeof apponboardingOnboardingRoute
+  '/categories/$groupId': typeof appdashboardCategoriesGroupIdRoute
+  '/categories': typeof appdashboardCategoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -65,12 +83,26 @@ export interface FileRoutesById {
   '/(auth)/sign-in': typeof authSignInRoute
   '/(app)/(dashboard)/dashboard': typeof appdashboardDashboardRoute
   '/(app)/(onboarding)/onboarding': typeof apponboardingOnboardingRoute
+  '/(app)/(dashboard)/categories/$groupId': typeof appdashboardCategoriesGroupIdRoute
+  '/(app)/(dashboard)/categories/': typeof appdashboardCategoriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/dashboard' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/dashboard'
+    | '/onboarding'
+    | '/categories/$groupId'
+    | '/categories/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/dashboard' | '/onboarding'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/dashboard'
+    | '/onboarding'
+    | '/categories/$groupId'
+    | '/categories'
   id:
     | '__root__'
     | '/'
@@ -79,6 +111,8 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in'
     | '/(app)/(dashboard)/dashboard'
     | '/(app)/(onboarding)/onboarding'
+    | '/(app)/(dashboard)/categories/$groupId'
+    | '/(app)/(dashboard)/categories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,15 +166,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appdashboardDashboardRouteImport
       parentRoute: typeof appdashboardRouteRoute
     }
+    '/(app)/(dashboard)/categories/': {
+      id: '/(app)/(dashboard)/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof appdashboardCategoriesIndexRouteImport
+      parentRoute: typeof appdashboardRouteRoute
+    }
+    '/(app)/(dashboard)/categories/$groupId': {
+      id: '/(app)/(dashboard)/categories/$groupId'
+      path: '/categories/$groupId'
+      fullPath: '/categories/$groupId'
+      preLoaderRoute: typeof appdashboardCategoriesGroupIdRouteImport
+      parentRoute: typeof appdashboardRouteRoute
+    }
   }
 }
 
 interface appdashboardRouteRouteChildren {
   appdashboardDashboardRoute: typeof appdashboardDashboardRoute
+  appdashboardCategoriesGroupIdRoute: typeof appdashboardCategoriesGroupIdRoute
+  appdashboardCategoriesIndexRoute: typeof appdashboardCategoriesIndexRoute
 }
 
 const appdashboardRouteRouteChildren: appdashboardRouteRouteChildren = {
   appdashboardDashboardRoute: appdashboardDashboardRoute,
+  appdashboardCategoriesGroupIdRoute: appdashboardCategoriesGroupIdRoute,
+  appdashboardCategoriesIndexRoute: appdashboardCategoriesIndexRoute,
 }
 
 const appdashboardRouteRouteWithChildren =

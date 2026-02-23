@@ -31,7 +31,7 @@ function RouteComponent() {
   const signIn = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${env.VITE_WEB_URL}${search.redirect || "dashboard"}`,
+      callbackURL: `${env.VITE_WEB_URL}${search.redirect || "/dashboard"}`,
     });
   };
 

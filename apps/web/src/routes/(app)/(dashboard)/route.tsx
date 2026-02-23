@@ -3,7 +3,7 @@ import z from "zod";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ActiveAccountContext } from "@/contexts/active-account";
 import { getUser } from "@/functions/get-user";
 import { useHydrated } from "@/lib/utils";
@@ -60,9 +60,7 @@ function RouteComponent() {
   const { session, bankAccounts, activeAccountId } = Route.useRouteContext();
   const isHydrated = useHydrated();
 
-  const resolvedActiveAccountId = isHydrated
-    ? (accountId ?? activeAccountId)
-    : activeAccountId;
+  const resolvedActiveAccountId = isHydrated ? (accountId ?? activeAccountId) : activeAccountId;
 
   return (
     <ActiveAccountContext value={{ activeBankAccount: resolvedActiveAccountId }}>
@@ -70,9 +68,6 @@ function RouteComponent() {
         {session.user && <AppSidebar bankAccounts={bankAccounts} user={session.user} />}
         <SidebarInset>
           <header className="relative flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-            </div>
             <div className="absolute top-4 right-4 z-10">
               <ThemeToggle />
             </div>
