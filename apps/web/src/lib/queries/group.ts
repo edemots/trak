@@ -4,24 +4,24 @@ import { generateRandomUid } from "@/lib/utils";
 import { queryClient } from "@/router";
 import { useTRPC } from "@/utils/trpc";
 
-export function useGroups() {
+export function useGroups(bankAccountUid: string) {
   const trpc = useTRPC();
-  return useQuery(trpc.group.all.queryOptions());
+  return useQuery(trpc.group.all.queryOptions({ bankAccountUid }));
 }
 
-export function useSuspenseGroups() {
+export function useSuspenseGroups(bankAccountUid: string) {
   const trpc = useTRPC();
-  return useSuspenseQuery(trpc.group.all.queryOptions());
+  return useSuspenseQuery(trpc.group.all.queryOptions({ bankAccountUid }));
 }
 
-export function useGroup(uid: string) {
+export function useGroup(uid: string, bankAccountUid: string) {
   const trpc = useTRPC();
-  return useQuery(trpc.group.byUid.queryOptions({ uid }));
+  return useQuery(trpc.group.byUid.queryOptions({ uid, bankAccountUid }));
 }
 
-export function useSuspenseGroup(uid: string) {
+export function useSuspenseGroup(uid: string, bankAccountUid: string) {
   const trpc = useTRPC();
-  return useSuspenseQuery(trpc.group.byUid.queryOptions({ uid }));
+  return useSuspenseQuery(trpc.group.byUid.queryOptions({ uid, bankAccountUid }));
 }
 
 export function useCreateGroupMutation() {
@@ -30,12 +30,16 @@ export function useCreateGroupMutation() {
     trpc.group.create.mutationOptions({
       onMutate: async (newGroup) => {
         await queryClient.cancelQueries({
-          queryKey: trpc.group.all.queryKey(),
+          queryKey: trpc.group.all.queryKey({ bankAccountUid: newGroup.bankAccountUid }),
         });
 
-        const previousGroups = queryClient.getQueryData(trpc.group.all.queryKey());
+        const previousGroups = queryClient.getQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: newGroup.bankAccountUid }),
+        );
 
-        queryClient.setQueryData(trpc.group.all.queryKey(), (old) =>
+        queryClient.setQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: newGroup.bankAccountUid }),
+          (old) =>
           old
             ? [
                 ...old,
@@ -61,12 +65,15 @@ export function useCreateGroupMutation() {
 
         return { previousGroups };
       },
-      onError: (_error, _newCategory, context) => {
-        queryClient.setQueryData(trpc.group.all.queryKey(), context?.previousGroups);
+      onError: (_error, newGroup, context) => {
+        queryClient.setQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: newGroup.bankAccountUid }),
+          context?.previousGroups,
+        );
       },
-      onSettled: async () => {
+      onSettled: async (_data, _error, newGroup) => {
         await queryClient.invalidateQueries({
-          queryKey: trpc.group.all.queryKey(),
+          queryKey: trpc.group.all.queryKey({ bankAccountUid: newGroup.bankAccountUid }),
         });
       },
     }),
@@ -92,33 +99,42 @@ export function useDeleteGroupMutation() {
       onMutate: async (deletedGroup) => {
         await Promise.all([
           queryClient.cancelQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({ bankAccountUid: deletedGroup.bankAccountUid }),
           }),
           queryClient.cancelQueries({
             queryKey: trpc.group.byUid.queryKey({
               uid: deletedGroup.uid,
+              bankAccountUid: deletedGroup.bankAccountUid,
             }),
           }),
         ]);
 
-        const previousGroups = queryClient.getQueryData(trpc.group.all.queryKey());
+        const previousGroups = queryClient.getQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: deletedGroup.bankAccountUid }),
+        );
         const previousGroup = queryClient.getQueryData(
           trpc.group.byUid.queryKey({
             uid: deletedGroup.uid,
+            bankAccountUid: deletedGroup.bankAccountUid,
           }),
         );
 
-        queryClient.setQueryData(trpc.group.all.queryKey(), (old) =>
-          old ? old.filter((group) => group.uid !== deletedGroup.uid) : old,
+        queryClient.setQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: deletedGroup.bankAccountUid }),
+          (old) => (old ? old.filter((group) => group.uid !== deletedGroup.uid) : old),
         );
 
         return { previousGroups, previousGroup };
       },
       onError: (_error, deletedGroup, context) => {
-        queryClient.setQueryData(trpc.group.all.queryKey(), context?.previousGroups);
+        queryClient.setQueryData(
+          trpc.group.all.queryKey({ bankAccountUid: deletedGroup.bankAccountUid }),
+          context?.previousGroups,
+        );
         queryClient.setQueryData(
           trpc.group.byUid.queryKey({
             uid: deletedGroup.uid,
+            bankAccountUid: deletedGroup.bankAccountUid,
           }),
           context?.previousGroup,
         );
@@ -126,11 +142,12 @@ export function useDeleteGroupMutation() {
       onSettled: async (_data, _error, deletedGroup) => {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({ bankAccountUid: deletedGroup.bankAccountUid }),
           }),
           queryClient.invalidateQueries({
             queryKey: trpc.group.byUid.queryKey({
               uid: deletedGroup.uid,
+              bankAccountUid: deletedGroup.bankAccountUid,
             }),
           }),
         ]);

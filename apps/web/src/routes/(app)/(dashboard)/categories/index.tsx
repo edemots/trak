@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { LayersIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { memo, useState } from "react";
+import { memo, useContext, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ActiveAccountContext } from "@/contexts/active-account";
 import {
   useCreateGroupMutation,
   useDeleteGroupMutation,
@@ -52,14 +53,31 @@ import {
 } from "@/lib/queries/group";
 
 export const Route = createFileRoute("/(app)/(dashboard)/categories/")({
-  loader: async ({ context: { queryClient, trpc } }) => {
-    return await queryClient.ensureQueryData(trpc.group.all.queryOptions());
+  loader: async ({ context: { queryClient, trpc }, location }) => {
+    const accountId = new URLSearchParams(location.search).get("accountId");
+    if (!accountId) {
+      throw redirect({
+        replace: true,
+        to: "/dashboard",
+      });
+    }
+
+    return await queryClient.ensureQueryData(
+      trpc.group.all.queryOptions({
+        bankAccountUid: accountId,
+      }),
+    );
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: groups } = useSuspenseGroups();
+  const { activeBankAccount } = useContext(ActiveAccountContext);
+  if (!activeBankAccount) {
+    return null;
+  }
+
+  const { data: groups } = useSuspenseGroups(activeBankAccount);
 
   const deleteGroup = useDeleteGroupMutation();
 
@@ -75,7 +93,7 @@ function RouteComponent() {
         {groups.length > 0 ? (
           <ul className="isolate grid grid-cols-1 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             <li className="isolate">
-              <CreateGroupForm />
+              <CreateGroupForm bankAccountUid={activeBankAccount} />
             </li>
             {groups.map((group) => (
               <li className="isolate" key={group.uid}>
@@ -83,7 +101,7 @@ function RouteComponent() {
                   <ContextMenu>
                     <ContextMenuTrigger
                       render={
-                        <Link params={{ groupId: group.uid }} to="/categories/$groupId">
+                        <Link search={(prev) => prev} params={{ groupId: group.uid }} to="/categories/$groupId">
                           <Card
                             className="after:from-background/64 relative h-full before:absolute before:inset-0 before:z-0 before:flex before:items-center before:justify-center before:text-[24rem] before:opacity-20 before:saturate-200 before:content-(--emoji) after:absolute after:inset-0 after:z-10 after:bg-linear-to-r after:to-transparent after:backdrop-blur-3xl"
                             style={
@@ -135,7 +153,7 @@ function RouteComponent() {
                         disabled={deleteGroup.isPending}
                         onClick={() =>
                           deleteGroup.mutate(
-                            { uid: group.uid },
+                            { uid: group.uid, bankAccountUid: activeBankAccount },
                             {
                               onSuccess: () => {
                                 toast.success("Catégorie supprimée.");
@@ -166,7 +184,7 @@ function RouteComponent() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent className="max-w-none">
-                <CreateGroupForm>
+                <CreateGroupForm bankAccountUid={activeBankAccount}>
                   <div>
                     <Button>Créer une nouvelle catégorie</Button>
                   </div>
@@ -181,7 +199,15 @@ function RouteComponent() {
 }
 
 export const CreateGroupForm = memo(
-  ({ categoryId, children }: { categoryId?: string; children?: React.ReactElement }) => {
+  ({
+    bankAccountUid,
+    categoryId,
+    children,
+  }: {
+    bankAccountUid: string;
+    categoryId?: string;
+    children?: React.ReactElement;
+  }) => {
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
     const createGroup = useCreateGroupMutation();
@@ -196,6 +222,7 @@ export const CreateGroupForm = memo(
           {
             icon: value.icon,
             name: value.name,
+            bankAccountUid,
           },
           {
             onSuccess: () => {

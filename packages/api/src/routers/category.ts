@@ -1,4 +1,5 @@
 import { db } from "@trak/db";
+import { bankAccount, userToBankAccount } from "@trak/db/schema/bank-account";
 import { category, group } from "@trak/db/schema/category";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
@@ -13,13 +14,36 @@ export const categoryRouter = router({
         name: z.string().min(1),
         icon: z.string().min(1),
         groupUid: z.string(),
+        bankAccountUid: z.string().min(1),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const bankAccountForUser = await db
+        .select({
+          id: bankAccount.id,
+        })
+        .from(bankAccount)
+        .innerJoin(userToBankAccount, eq(bankAccount.id, userToBankAccount.bankAccountId))
+        .where(
+          and(
+            eq(userToBankAccount.userId, ctx.session.user.id),
+            eq(bankAccount.uid, input.bankAccountUid),
+          ),
+        )
+        .limit(1)
+        .get();
+
+      if (!bankAccountForUser) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Accès refusé au compte bancaire.",
+        });
+      }
+
       const groupForCategory = await db
         .select()
         .from(group)
-        .where(eq(group.uid, input.groupUid))
+        .where(and(eq(group.uid, input.groupUid), eq(group.bankAccountId, bankAccountForUser.id)))
         .limit(1)
         .get();
 
@@ -27,6 +51,26 @@ export const categoryRouter = router({
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Le groupe n'existe pas",
+        });
+      }
+
+      const existingCategory = await db
+        .select({ id: category.id })
+        .from(category)
+        .where(
+          and(
+            eq(category.groupId, groupForCategory.id),
+            eq(category.name, input.name),
+            eq(category.icon, input.icon),
+          ),
+        )
+        .limit(1)
+        .get();
+
+      if (existingCategory) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cette catégorie existe déjà dans ce groupe.",
         });
       }
 
@@ -51,19 +95,46 @@ export const categoryRouter = router({
       z.object({
         uid: z.string(),
         groupUid: z.string(),
+        bankAccountUid: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const { uid } = input;
-      const userId = ctx.session.user.id;
+      const bankAccountForUser = await db
+        .select({
+          id: bankAccount.id,
+        })
+        .from(bankAccount)
+        .innerJoin(userToBankAccount, eq(bankAccount.id, userToBankAccount.bankAccountId))
+        .where(
+          and(
+            eq(userToBankAccount.userId, ctx.session.user.id),
+            eq(bankAccount.uid, input.bankAccountUid),
+          ),
+        )
+        .limit(1)
+        .get();
+
+      if (!bankAccountForUser) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Accès refusé au compte bancaire.",
+        });
+      }
 
       const categoryToDelete = await db
         .select({
           id: category.id,
         })
         .from(category)
-        .innerJoin(group, eq(category.groupId, group.id))
-        .where(and(eq(group.userId, userId), eq(category.uid, uid)))
+        .innerJoin(group, and(eq(category.groupId, group.id), eq(group.uid, input.groupUid)))
+        .where(
+          and(
+            eq(group.bankAccountId, bankAccountForUser.id),
+            eq(category.uid, uid),
+            eq(group.uid, input.groupUid),
+          ),
+        )
         .limit(1)
         .get();
 

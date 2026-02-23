@@ -60,7 +60,7 @@ function RouteComponent() {
   const { session, bankAccounts, activeAccountId } = Route.useRouteContext();
   const isHydrated = useHydrated();
 
-  const resolvedActiveAccountId = isHydrated ? (accountId ?? activeAccountId) : activeAccountId;
+  const resolvedActiveAccountId = isHydrated ? accountId : activeAccountId;
 
   return (
     <ActiveAccountContext value={{ activeBankAccount: resolvedActiveAccountId }}>

@@ -1,10 +1,11 @@
 import { db } from "@trak/db";
 import { bankAccount, userToBankAccount } from "@trak/db/schema/bank-account";
 import { TRPCError } from "@trpc/server";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
+import { seedDefaultCategoriesForBankAccount } from "../lib/default-categories";
 
 export type { BankAccount } from "@trak/db/schema/bank-account";
 
@@ -28,11 +29,19 @@ export const bankAccountRouter = router({
         uid: z.string(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       return await db
-        .select()
+        .select({
+          id: bankAccount.id,
+          uid: bankAccount.uid,
+          createdAt: bankAccount.createdAt,
+          updatedAt: bankAccount.updatedAt,
+          name: bankAccount.name,
+          icon: bankAccount.icon,
+        })
         .from(bankAccount)
-        .where(eq(bankAccount.uid, input.uid))
+        .innerJoin(userToBankAccount, eq(bankAccount.id, userToBankAccount.bankAccountId))
+        .where(and(eq(bankAccount.uid, input.uid), eq(userToBankAccount.userId, ctx.session.user.id)))
         .limit(1)
         .get();
     }),
@@ -69,10 +78,12 @@ export const bankAccountRouter = router({
         userId: ctx.session.user.id,
       });
 
+      await seedDefaultCategoriesForBankAccount(newBankAccount[0].id);
+
       const { id: _id, ...bankAccountWithoutId } = newBankAccount[0];
 
       return bankAccountWithoutId;
     }),
-  update: protectedProcedure.mutation(async ({ ctx }) => {}),
-  delete: protectedProcedure.mutation(async ({ ctx }) => {}),
+  update: protectedProcedure.mutation(async () => {}),
+  delete: protectedProcedure.mutation(async () => {}),
 });

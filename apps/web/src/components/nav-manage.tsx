@@ -4,8 +4,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
-import { DynamicIcon, type IconName } from "lucide-react/dynamic";
-import React from "react";
+import { useContext } from "react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -18,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { ActiveAccountContext } from "@/contexts/active-account";
 
 export function NavManage({
   items,
@@ -26,6 +26,7 @@ export function NavManage({
     title: string;
     url: string;
     icon?: LucideIcon;
+    requiresAccount?: boolean;
     items?: {
       title: string;
       url: string;
@@ -33,17 +34,27 @@ export function NavManage({
   }[];
 }) {
   const matchRoute = useMatchRoute();
+  const { activeBankAccount } = useContext(ActiveAccountContext);
+  const linkSearch = {
+    accountId: activeBankAccount,
+  };
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Gestion</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <React.Fragment key={item.title}>
-            {item.items && item.items.length > 0 ? (
+        {items.map((item) => {
+          const isBlockedWithoutAccount = item.requiresAccount && !activeBankAccount;
+
+          if (isBlockedWithoutAccount) {
+            return null;
+          }
+
+          return item.items && item.items.length > 0 ? (
               <Collapsible
                 className="group/collapsible"
                 defaultOpen={matchRoute({ to: item.url, fuzzy: true }) !== false}
+                key={item.title}
                 render={
                   <SidebarMenuItem>
                     <CollapsibleTrigger
@@ -64,7 +75,7 @@ export function NavManage({
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               render={
-                                <Link to={subItem.url}>
+                                <Link search={linkSearch} to={subItem.url}>
                                   <span>{subItem.title}</span>
                                 </Link>
                               }
@@ -77,20 +88,19 @@ export function NavManage({
                 }
               />
             ) : (
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={matchRoute({ to: item.url, fuzzy: true }) !== false}
-                  render={
-                    <Link to={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
-                  }
-                />
-              </SidebarMenuItem>
-            )}
-          </React.Fragment>
-        ))}
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                isActive={matchRoute({ to: item.url, fuzzy: true }) !== false}
+                render={
+                  <Link search={linkSearch} to={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </Link>
+                }
+              />
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

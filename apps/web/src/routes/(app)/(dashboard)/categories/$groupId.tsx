@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -37,14 +37,24 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ActiveAccountContext } from "@/contexts/active-account";
 import { useCreateCategoryMutation, useDeleteCategoryMutation } from "@/lib/queries/category";
 import { useSuspenseGroup } from "@/lib/queries/group";
 
 export const Route = createFileRoute("/(app)/(dashboard)/categories/$groupId")({
-  loader: async ({ context, params }) => {
+  loader: async ({ context, params, location }) => {
+    const accountId = new URLSearchParams(location.search).get("accountId");
+    if (!accountId) {
+      throw redirect({
+        replace: true,
+        to: "/dashboard",
+      });
+    }
+
     return await context.queryClient.ensureQueryData(
       context.trpc.group.byUid.queryOptions({
         uid: params.groupId,
+        bankAccountUid: accountId,
       }),
     );
   },
@@ -53,8 +63,12 @@ export const Route = createFileRoute("/(app)/(dashboard)/categories/$groupId")({
 
 function RouteComponent() {
   const { groupId } = Route.useParams();
+  const { activeBankAccount } = useContext(ActiveAccountContext);
+  if (!activeBankAccount) {
+    return null;
+  }
 
-  const { data: group } = useSuspenseGroup(groupId);
+  const { data: group } = useSuspenseGroup(groupId, activeBankAccount);
   const deleteCategory = useDeleteCategoryMutation();
 
   if (!group) {
@@ -71,7 +85,7 @@ function RouteComponent() {
         <Button
           nativeButton={false}
           render={
-            <Link to={"/categories"}>
+            <Link search={(prev) => prev} to={"/categories"}>
               <ArrowLeftIcon className="size-[1lh]" />
               Retour
             </Link>
@@ -82,7 +96,7 @@ function RouteComponent() {
       <section>
         <ul className="isolate grid grid-cols-1 gap-6 sm:grid-cols-3 lg:grid-cols-5">
           <li className="isolate">
-            <CreateCategoryForm />
+            <CreateCategoryForm bankAccountUid={activeBankAccount} />
           </li>
           {group.categories?.map((category) => (
             <li className="isolate" key={category.uid}>
@@ -134,7 +148,11 @@ function RouteComponent() {
                       disabled={deleteCategory.isPending}
                       onClick={() =>
                         deleteCategory.mutate(
-                          { uid: category.uid, groupUid: group.uid },
+                          {
+                            uid: category.uid,
+                            groupUid: group.uid,
+                            bankAccountUid: activeBankAccount,
+                          },
                           {
                             onSuccess: () => {
                               toast.success("Catégorie supprimée.");
@@ -157,7 +175,7 @@ function RouteComponent() {
   );
 }
 
-export const CreateCategoryForm = () => {
+export const CreateCategoryForm = ({ bankAccountUid }: { bankAccountUid: string }) => {
   const { groupId } = Route.useParams();
   const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
 
@@ -168,6 +186,7 @@ export const CreateCategoryForm = () => {
       icon: "😀",
       name: "",
       groupUid: groupId,
+      bankAccountUid,
     },
     onSubmit: ({ value }) => {
       createCategory.mutate(
@@ -175,6 +194,7 @@ export const CreateCategoryForm = () => {
           icon: value.icon,
           name: value.name,
           groupUid: value.groupUid,
+          bankAccountUid: value.bankAccountUid,
         },
         {
           onSuccess: () => {
@@ -194,6 +214,7 @@ export const CreateCategoryForm = () => {
         icon: z.string().min(1, "Icône requise"),
         name: z.string().min(1, "Nom de la catégorie requis"),
         groupUid: z.literal(groupId),
+        bankAccountUid: z.literal(bankAccountUid),
       }),
     },
   });

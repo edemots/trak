@@ -35,6 +35,7 @@ const data = {
       title: "Catégories",
       url: "/categories",
       icon: LayersIcon,
+      requiresAccount: true,
     },
   ],
 };

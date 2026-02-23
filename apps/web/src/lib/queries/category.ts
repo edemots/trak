@@ -12,48 +12,64 @@ export function useCreateCategoryMutation() {
       onMutate: async (newCategory) => {
         await Promise.all([
           queryClient.cancelQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({ bankAccountUid: newCategory.bankAccountUid }),
           }),
           queryClient.cancelQueries({
-            queryKey: trpc.group.byUid.queryKey({ uid: newCategory.groupUid }),
+            queryKey: trpc.group.byUid.queryKey({
+              uid: newCategory.groupUid,
+              bankAccountUid: newCategory.bankAccountUid,
+            }),
           }),
         ]);
 
         const previousGroup = queryClient.getQueryData(
-          trpc.group.byUid.queryKey({ uid: newCategory.groupUid }),
+          trpc.group.byUid.queryKey({
+            uid: newCategory.groupUid,
+            bankAccountUid: newCategory.bankAccountUid,
+          }),
         );
 
-        queryClient.setQueryData(trpc.group.byUid.queryKey(), (old) =>
-          old
-            ? {
-                ...old,
-                categories: [
-                  ...old.categories,
-                  {
-                    uid: generateRandomUid(),
-                    ...newCategory,
-                  },
-                ],
-              }
-            : old,
+        queryClient.setQueryData(
+          trpc.group.byUid.queryKey({
+            uid: newCategory.groupUid,
+            bankAccountUid: newCategory.bankAccountUid,
+          }),
+          (old) =>
+            old
+              ? {
+                  ...old,
+                  categories: [
+                    ...old.categories,
+                    {
+                      uid: generateRandomUid(),
+                      name: newCategory.name,
+                      icon: newCategory.icon,
+                    },
+                  ],
+                }
+              : old,
         );
 
         return { previousGroup };
       },
       onError: (_error, newCategory, context) => {
         queryClient.setQueryData(
-          trpc.group.byUid.queryKey({ uid: newCategory.groupUid }),
+          trpc.group.byUid.queryKey({
+            uid: newCategory.groupUid,
+            bankAccountUid: newCategory.bankAccountUid,
+          }),
           context?.previousGroup,
         );
       },
       onSettled: async (_data, _error, newCategory) => {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({ bankAccountUid: newCategory.bankAccountUid }),
           }),
           queryClient.invalidateQueries({
             queryKey: trpc.group.byUid.queryKey({
               uid: newCategory.groupUid,
+              bankAccountUid: newCategory.bankAccountUid,
             }),
           }),
         ]);
@@ -81,46 +97,61 @@ export function useDeleteCategoryMutation() {
       onMutate: async (deletedCategory) => {
         await Promise.all([
           queryClient.cancelQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({ bankAccountUid: deletedCategory.bankAccountUid }),
           }),
           queryClient.cancelQueries({
             queryKey: trpc.group.byUid.queryKey({
               uid: deletedCategory.groupUid,
+              bankAccountUid: deletedCategory.bankAccountUid,
             }),
           }),
         ]);
 
         const previousGroup = queryClient.getQueryData(
-          trpc.group.byUid.queryKey({ uid: deletedCategory.groupUid }),
+          trpc.group.byUid.queryKey({
+            uid: deletedCategory.groupUid,
+            bankAccountUid: deletedCategory.bankAccountUid,
+          }),
         );
 
-        queryClient.setQueryData(trpc.group.byUid.queryKey(), (old) =>
-          old
-            ? {
-                ...old,
-                categories: old.categories.filter(
-                  (category) => category.uid !== deletedCategory.uid,
-                ),
-              }
-            : old,
+        queryClient.setQueryData(
+          trpc.group.byUid.queryKey({
+            uid: deletedCategory.groupUid,
+            bankAccountUid: deletedCategory.bankAccountUid,
+          }),
+          (old) =>
+            old
+              ? {
+                  ...old,
+                  categories: old.categories.filter(
+                    (category) => category.uid !== deletedCategory.uid,
+                  ),
+                }
+              : old,
         );
 
         return { previousGroup };
       },
       onError: (_error, deletedCategory, context) => {
         queryClient.setQueryData(
-          trpc.group.byUid.queryKey({ uid: deletedCategory.groupUid }),
+          trpc.group.byUid.queryKey({
+            uid: deletedCategory.groupUid,
+            bankAccountUid: deletedCategory.bankAccountUid,
+          }),
           context?.previousGroup,
         );
       },
       onSettled: async (_data, _error, deletedCategory) => {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: trpc.group.all.queryKey(),
+            queryKey: trpc.group.all.queryKey({
+              bankAccountUid: deletedCategory.bankAccountUid,
+            }),
           }),
           queryClient.invalidateQueries({
             queryKey: trpc.group.byUid.queryKey({
               uid: deletedCategory.groupUid,
+              bankAccountUid: deletedCategory.bankAccountUid,
             }),
           }),
         ]);
